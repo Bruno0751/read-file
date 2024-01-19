@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+    <title>LER CSV</title>
+</head>
+
+<body>
+
+    <input type="file" id="fileInput">
+    <pre id="output"></pre>
+
+    <script>
+        document.getElementById('fileInput').addEventListener('change', handleFile);
+        function handleFile(event) {
+            if (document.getElementById('fileInput').value.substring(document.getElementById('fileInput').value.length - 3).includes('ods')) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const data = new Uint8Array(e.target.result);
+                        // Carregar o arquivo ODS usando a biblioteca SheetJS
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        // Ler a primeira planilha do arquivo (índice 0)
+                        const firstSheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[firstSheetName];
+                        // Converter a planilha para um objeto JavaScript
+                        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                        // Exemplo de como imprimir os dados
+                        console.log(jsonData[1][1]);
+                        // Ou você pode manipular os dados de outra maneira, dependendo dos requisitos do seu aplicativo
+                        document.getElementById('output').innerText = JSON.stringify(jsonData, null, 2);
+                    };
+                    reader.readAsArrayBuffer(file);
+                }
+            }
+            if (document.getElementById('fileInput').value.substring(document.getElementById('fileInput').value.length - 3).includes('csv')) {
+                alert('csv')
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>
